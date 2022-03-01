@@ -7,6 +7,7 @@
 \usepackage{makecell}
 \usepackage{booktabs}
 \usepackage{caption}
+\usepackage{subcaption}
 \usepackage{physics}
 \usepackage{xcolor}
 \usepackage{multirow}
@@ -16,7 +17,7 @@
 
 % \beamersetuncovermixins{\opaqueness<1>{25}}{\opaqueness<2->{15}}
 \begin{document}
-	\title[Bayesian Hierarchical Clustering]{Bayesian Hierarchical Clustering for CyTOF: A Research Proposal}
+	\title[Bayesian Hierarchical Clustering]{Bayesian Hierarchical Clustering for CyTOF}
 	\author{Mukai Wang}
 	
 	\begin{frame}
@@ -28,16 +29,9 @@
 	\end{frame}
 
 	\section{Hierarchical Clustering}
-	\subsection{SPADE}
 	
-	\begin{frame}
-		\tableofcontents
-		[
-		currentsection,
-		currentsubsection,
-		subsectionstyle=show/shaded/hide
-		]
-	\end{frame}
+	
+	
 	
 	\begin{frame}{SPADE Clustering}
 		\begin{figure}[htbp]
@@ -47,7 +41,294 @@
 		\end{figure}
 	\end{frame}
 	
+	\begin{frame}{Hierarchical Clustering}
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.33]{ISLRhclust.png}
+			\caption*{James etal, \emph{An Introduction to Statistical Learning in R}}
+		\end{figure}
+	\end{frame}
+	\subsection{Agglomerative Clustering}
+	\begin{frame}
+		\tableofcontents
+		[
+		currentsection,
+		currentsubsection,
+		subsectionstyle=show/shaded/hide
+		]
+	\end{frame}
+	
+	\begin{frame}{Agglomerative Clustering}
+		\begin{columns}
+			\begin{column}{0.4\linewidth}
+				Our goal is to cluster 7 points into 2 groups.
+				\begin{table}[htbp]
+					\centering
+					\begin{tabular}{ccc}
+						\toprule
+						Index & X & Y\\
+						\midrule
+						1 & 2.05 & 1.36\\
+						2 & 1.90 & 2.13\\
+						3 & 1.49 & 3.12\\
+						4 & 2.16 & 1.2\\
+						5 & 2.3 & 4.4\\
+						6 & 3.27 & 2.9\\
+						7 & 3.73 & 3.29\\
+						\bottomrule
+					\end{tabular}
+				\end{table}
+			\end{column}
+			\begin{column}{0.6\linewidth}
+				\begin{figure}[htbp]
+					\centering
+					\includegraphics[scale=0.6]{scatterplot.eps}
+				\end{figure}
+			\end{column}
+		\end{columns}
+	\end{frame}
+	
+	\begin{frame}{Aggolemative Clustering}
+		To carry out agglomerative clustering, we need to calculate the pairwise distance between each pair of points.
+		\[ d(i, j) = \sqrt{(X_i - X_j)^2 + (Y_i - Y_j)^2 }\]
+		
+		\begin{table}
+			\centering
+			\begin{tabular}{c|ccccccc}
+				&1&2&3&4&5&6&7\\
+				\hline
+				1&&0.78&1.84&\textcolor{red}{0.20}&3.05&1.96&2.56\\
+				2&&&1.07&0.97&2.31&1.57&2.17\\
+				3&&&&2.04&1.51&1.79&2.24\\
+				4&&&&&3.21&2.03&2.62\\
+				5&&&&&&1.79&1.81\\
+				6&&&&&&&0.60\\
+				7&&&&&&&\\
+			\end{tabular}
+		\end{table}
+	\end{frame}
+	
+	\begin{frame}{Agglomerative Clustering}
+		After finding the smallest pairwise distance, we merge the corresponding two points into one entity.
+		\begin{table}[htbp]
+			\begin{tabular}{c|cccccc}
+				&$\begin{bmatrix}1&4 \end{bmatrix}$ & 2 & 3 & 5 & 6 & 7\\
+				\hline
+				$\begin{bmatrix}1\\4 \end{bmatrix}$&&0.87&1.94&3.13&2.00&2.59\\
+				2&&&1.07&2.31&1.57&2.17\\
+				3&&&&1.51&1.79&2.24\\
+				5&&&&&1.79&1.81\\
+				6&&&&&&\textcolor{red}{0.60}\\
+				7&&&&&&\\
+			\end{tabular}
+		\end{table}
+	
+		Note that when I calculate the distance between $\{1, 4\}$ and other points, I use the average distance
+		\[d\left(\{1, 4\}, 2\right) = \frac{1}{2}\left( d(1,2) + d(1,4) \right) \]
+	\end{frame}
+	
+	\begin{frame}{Agglomerative Clustering}
+		\begin{table}[htbp]
+			\centering
+			\begin{tabular}{c|ccccc}
+				&$\begin{bmatrix}1&4 \end{bmatrix}$ & 2&3&5& $\begin{bmatrix}6&7 \end{bmatrix}$\\
+				\hline
+				$\begin{bmatrix}1\\4 \end{bmatrix}$ & &\textcolor{red}{0.87} &1.94&3.13&2.29\\
+				2&&&1.07&2.31&1.87\\
+				3&&&&1.51&2.02\\
+				5&&&&&1.80\\
+				$\begin{bmatrix}6\\7 \end{bmatrix}$&&&&&\\
+			\end{tabular}
+		\end{table}
+	
+	\[ d\left(\{1, 4\}, \{6, 7\}\right) =  \frac{1}{4}\left( d(1,6) + d(1,7) + d(4,6) + d(4,7)\right)\]
+	\end{frame}
+	
+	\begin{frame}{Agglomerative Clustering}
+		\begin{table}[htbp]
+			\begin{tabular}{c|cccc}
+				& $\begin{bmatrix}1&2&4 \end{bmatrix}$ &3&5& $\begin{bmatrix}6&7 \end{bmatrix}$\\
+				\hline
+				$\begin{bmatrix}1\\2\\4 \end{bmatrix}$&&1.65&2.85&2.15\\
+				3 &&&\textcolor{red}{1.51}&2.01\\
+				5&&&&1.79\\
+				$\begin{bmatrix}6\\7 \end{bmatrix}$&&&&\\ 
+			\end{tabular}
+		\end{table}
+	\end{frame}
+	
+	\begin{frame}{Agglomerative Clustering}
+		\begin{table}[htbp]
+			\begin{tabular}{c|ccc}
+				&$\begin{bmatrix}1&2&4 \end{bmatrix}$ & $\begin{bmatrix}3&5 \end{bmatrix}$&$\begin{bmatrix}6&7 \end{bmatrix}$\\
+				\hline
+				$\begin{bmatrix}1\\2\\4 \end{bmatrix}$ &&2.25&2.15\\
+				$\begin{bmatrix}3\\5 \end{bmatrix}$ &&&\textcolor{red}{1.91}\\
+				$\begin{bmatrix}6\\7 \end{bmatrix}$ &&&\\
+			\end{tabular}
+		\end{table}
+	At this point, we know that $\{3,5\}$ and $\{6,7\}$ will first be merged, then all the points will be merged together.
+	\end{frame}
+	
+	\begin{frame}{Agglomerative Clustering}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{agglodendrogram.eps}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{aggloresult.eps}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+	
+	\subsection{Divisive Clustering}
+	\begin{frame}
+		\tableofcontents
+		[
+		currentsection,
+		currentsubsection,
+		subsectionstyle=show/shaded/hide
+		]
+	\end{frame}
+	
+	\begin{frame}{Divisive Clustering}
+		\begin{columns}
+			\begin{column}{0.4\linewidth}
+				\begin{table}[htbp]
+					\centering
+					\begin{tabular}{ccc}
+						\toprule
+						Index & X & Y\\
+						\midrule
+						1 & 2.05 & 1.36\\
+						2 & 1.90 & 2.13\\
+						3 & 1.49 & 3.12\\
+						4 & 2.16 & 1.2\\
+						5 & 2.3 & 4.4\\
+						6 & 3.27 & 2.9\\
+						7 & 3.73 & 3.29\\
+						\bottomrule
+					\end{tabular}
+				\end{table}
+			\end{column}
+			\begin{column}{0.6\linewidth}
+				\begin{figure}[htbp]
+					\centering
+					\includegraphics[scale=0.6]{scatterplot.eps}
+				\end{figure}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\begin{frame}{Divisive Clustering}
+		
+		First calculate the average distance to other points for each point. For example, the average distance of point 1 with other points is
+		\[(0.78+1.84+0.20+3.05+1.96+2.56)/6=1.484 \]
+		\begin{table}[htbp]
+			\centering
+			\begin{tabular}{cc}
+				\toprule
+				Point & \makecell{Average Distance \\ to Other Points}\\
+				\midrule
+				1 & 1.73 \\
+				2 & 1.48 \\
+				3 & 1.75 \\ 
+				4 & 1.84 \\
+				5 & \textcolor{red}{2.28}  \\
+				6 & 1.62 \\
+				7 & 2.00 \\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+		
+	\end{frame}
+	
+	\begin{frame}{Divisive Clustering}
+		We separate out point 5 to be a new cluster. Then we need to decide if we want to move other points from $\{1,2,3,4,6,7 \}$ to the new cluster. We calculate the average distance to the remaining points and the average distance to the new cluster of "splinter points".
+		
+		\begin{table}[htbp]
+			\begin{tabular}{cccc}
+				\toprule
+				Point & \makecell{Average Distance \\ to Remaining Points} & \makecell{Average Distance \\ to Splinter Points} & Difference\\
+				\midrule
+				1& 1.47 & 3.05 & -1.579\\
+				2& 1.31 & 2.31 & -0.995\\
+				3& 1.80 & 1.51 & \textcolor{red}{0.284}\\
+				4& 1.57& 3.21 & -1.636\\
+				6& 1.59 & 1.79 & -0.196\\
+				7& 2.04&  1.81 & 0.229\\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+	\end{frame}
+
+	\begin{frame}{Divisive Clustering}
+		We add point 3 to the new cluster $\{3, 5\}$, then we check the rest of the points $\{1,2,4,6,7\}$.
+		\begin{table}[htbp]
+			\begin{tabular}{cccc}
+				\toprule
+				Point & \makecell{Average Distance \\ to Remaining Points} & \makecell{Average Distance \\ to Splinter Points} & Difference\\
+				\midrule
+				1& 1.37 & 2.45 & -1.08\\
+				2& 1.37 & 1.69 & -0.32\\
+				4& 1.45& 2.62 & -1.17\\
+				6& 1.54 & 1.79 & -0.25\\
+				7& 1.99&  2.03 & -0.04\\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+		We notice that all the points are more \emph{comfortable} with the current group than joining the new cluster, therefore we stop here.
+	\end{frame}
+	
+	\begin{frame}{Comments}
+		We realize that the agglomerative clustering and the divisive clustering provided different results.
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{aggloresult.eps}
+				\subcaption*{Agglomerative Clustering}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{divresult.eps}
+				\subcaption*{Divisive Clustering}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Comments}
+		Neither of them is correct. The data are generated from two 2D Gaussian distributions, one centered at $(2,2)$ and the other centered at $(3,3)$.
+		\begin{figure}[htbp]
+			\begin{subfigure}{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.3]{2DGaussian.png}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{datagen.eps}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Comments}
+		\begin{itemize}
+			\item Hierarchical clustering has great potential of grouping subjects effectively.
+			\item Different hierarchical clustering procedures have their own merits and provide different feasible results.
+			\begin{itemize}
+				\item Agglomerative clustering is simpler than divisive clustering.
+				\item Divisive clustering is more efficient if we don't need a complete hierarchy.
+			\end{itemize}
+			\item Clustering subjects has uncertainty. It's crucial to quantify the uncertainty for medical experts to make informed decision.
+		\end{itemize}
+	\end{frame}
+	
 	\section{Bayesian Statistics}
+	\subsection{Basic Idea of Bayesian Statistics}
 		\begin{frame}
 		\tableofcontents
 		[
@@ -56,7 +337,9 @@
 		subsectionstyle=show/shaded/hide
 		]
 	\end{frame}
-	\section{Dirichlet Prior for Bayesian Clustering}
+
+
+	\subsection{Bayesian Clustering with Dirichlet Process Prior}
 		\begin{frame}
 		\tableofcontents
 		[
@@ -65,6 +348,7 @@
 		subsectionstyle=show/shaded/hide
 		]
 	\end{frame}
+
 	\section{Dirichlet Diffusion Tree Prior for Bayesian Clustering}	
 		\begin{frame}
 		\tableofcontents
