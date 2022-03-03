@@ -1,4 +1,3 @@
-
 \documentclass{beamer}
 % \setbeamertemplate{navigation symbols}{}
 %\setbeamercolor{frametitle}{fg=black,bg=white}
@@ -7,6 +6,10 @@
 \usepackage{makecell}
 \usepackage{booktabs}
 \usepackage{caption}
+\usepackage{amsmath}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+\usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{physics}
 \usepackage{xcolor}
@@ -15,10 +18,11 @@
 \usepackage{ragged2e}
 \apptocmd{\frame}{}{\justifying}{}
 
+\title[Bayesian Hierarchical Clustering]{Bayesian Hierarchical Clustering for CyTOF}
+	\author{Mukai Wang}
 % \beamersetuncovermixins{\opaqueness<1>{25}}{\opaqueness<2->{15}}
 \begin{document}
-	\title[Bayesian Hierarchical Clustering]{Bayesian Hierarchical Clustering for CyTOF}
-	\author{Mukai Wang}
+	
 	
 	\begin{frame}
 		\titlepage
@@ -36,7 +40,7 @@
 	\begin{frame}{SPADE Clustering}
 		\begin{figure}[htbp]
 			\centering
-			\includegraphics[scale=0.5]{SPADE.png}
+			\includegraphics[scale=0.45]{SPADE.png}
 			\caption*{Qiu etal \emph{Nature Biotechnology} 2011}
 		\end{figure}
 	\end{frame}
@@ -82,7 +86,7 @@
 			\begin{column}{0.6\linewidth}
 				\begin{figure}[htbp]
 					\centering
-					\includegraphics[scale=0.6]{scatterplot.eps}
+					\includegraphics[scale=0.6]{scatterplot.pdf}
 				\end{figure}
 			\end{column}
 		\end{columns}
@@ -174,12 +178,12 @@
 		\begin{figure}[htbp]
 			\begin{subfigure}[b]{0.45\columnwidth}
 				\centering
-				\includegraphics[scale=0.5]{agglodendrogram.eps}
+				\includegraphics[scale=0.5]{agglodendrogram.pdf}
 			\end{subfigure}
 			\hfill
 			\begin{subfigure}[b]{0.45\columnwidth}
 				\centering
-				\includegraphics[scale=0.5]{aggloresult.eps}
+				\includegraphics[scale=0.47]{aggloresult.pdf}
 			\end{subfigure}
 		\end{figure}
 	\end{frame}
@@ -217,7 +221,7 @@
 			\begin{column}{0.6\linewidth}
 				\begin{figure}[htbp]
 					\centering
-					\includegraphics[scale=0.6]{scatterplot.eps}
+					\includegraphics[scale=0.6]{scatterplot}
 				\end{figure}
 			\end{column}
 		\end{columns}
@@ -288,13 +292,13 @@
 		\begin{figure}[htbp]
 			\begin{subfigure}[b]{0.45\columnwidth}
 				\centering
-				\includegraphics[scale=0.5]{aggloresult.eps}
+				\includegraphics[scale=0.5]{aggloresult}
 				\subcaption*{Agglomerative Clustering}
 			\end{subfigure}
 			\hfill
 			\begin{subfigure}[b]{0.45\columnwidth}
 				\centering
-				\includegraphics[scale=0.5]{divresult.eps}
+				\includegraphics[scale=0.5]{divresult}
 				\subcaption*{Divisive Clustering}
 			\end{subfigure}
 		\end{figure}
@@ -303,17 +307,18 @@
 	\begin{frame}{Comments}
 		Neither of them is correct. The data are generated from two 2D Gaussian distributions, one centered at $(2,2)$ and the other centered at $(3,3)$.
 		\begin{figure}[htbp]
-			\begin{subfigure}{0.45\columnwidth}
+			\begin{subfigure}{0.48\columnwidth}
 				\centering
-				\includegraphics[scale=0.3]{2DGaussian.png}
+				\includegraphics[scale=0.27]{2DGaussian.png}
 			\end{subfigure}
 			\hfill
-			\begin{subfigure}{0.45\columnwidth}
+			\begin{subfigure}{0.48\columnwidth}
 				\centering
-				\includegraphics[scale=0.5]{datagen.eps}
+				\includegraphics[scale=0.47]{datagen}
 			\end{subfigure}
 		\end{figure}
 	\end{frame}
+	
 	
 	\begin{frame}{Comments}
 		\begin{itemize}
@@ -338,8 +343,57 @@
 		]
 	\end{frame}
 
+	\begin{frame}{Example: Inference about a Genetic Status}
+		Hemophilia is a genetic disease that exhibits X-chromosome-linked recessive inheritance. Consider a woman who is not affected but has an affected brother and unaffected parents. We need an estimate of the chance this woman being a carrier as accurate as possible.
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.6]{GeneticsTree.pdf}
+		\end{figure}
+	\end{frame}
 
-	\subsection{Bayesian Clustering with Dirichlet Process Prior}
+	\begin{frame}{Example: Inference about a Genetic Status}
+		The current information tells us that the probability of this woman being a carrier ($\theta=1$) versus not being a carrier ($\theta=0$) is the same, namely $P(\theta=1) = P(\theta=0) = 1/2$
+		
+		Now we have additional information that this woman has two sons, and neither of them is affected. We can use this information to update our estimate of $\theta$. Let's use $y_1$ and $y_2$ to denote whether her two sons are affected. If the woman is a carrier, then the chance of her sons being unaffected is
+		
+		$$ P(\left. y_1=0, y_2=0 \right\vert \theta=1) = 0.5\times 0.5=0.25 $$
+		
+		If the woman is not a carrier, then the chance of her sons being unaffected is
+		
+		$$ P(\left. y_1=0, y_2=0 \right\vert \theta=0) =1 \times 1=1 $$
+	\end{frame}
+
+	\begin{frame}{Example: Inference about a Genetic Status}
+		The new information help us update the probability that this woman being a carrier
+		\small
+		\begin{align*}
+			&\quad P(\left.\theta=1 \right\vert y_1, y_2) \\
+			&= \frac{P(\left. y_1=0, y_2=0 \right\vert \theta=1) P(\theta=1)}{P(\left. y_1=0, y_2=0 \right\vert \theta=1) P(\theta=1) + P(\left. y_1=0, y_2=0 \right\vert \theta=0) P(\theta=0)}\\
+			&=\frac{0.25\times 0.5 }{0.25\times 0.5 + 1\times 0.5} = 0.2
+		\end{align*}
+		
+		The fact that the woman's sons are healthy make us believe that the woman is unlikely to be a carrier of hemophilia.
+	\end{frame}	
+	
+	\begin{frame}{Bayesian Statistics Philosophy}
+	\small
+		\begin{table}[htbp]
+			\centering
+			\renewcommand{\arraystretch}{2.4}
+			\begin{tabular}{cc}
+			\toprule
+			& Hemophilia Genetics\\
+			\midrule
+			\makecell{Prior Belief about \\ unobserved quantity of interest} & Mom's chance of being a carrier \\
+			\makecell{Connection Between Observed \\ and Unobserved Quantity} & Sons' disease probability given Mom's status\\
+			\makecell{Observed Data} & Disease Status of Sons \\
+			\makecell{Posterior Inference} & \makecell{Updated chance of  Mom being a carrier} \\
+			\bottomrule
+			\end{tabular}
+		\end{table}
+	\end{frame}
+
+	\subsection{Gaussian Mixture Model with Fixed Number of Clusters}
 		\begin{frame}
 		\tableofcontents
 		[
@@ -349,7 +403,82 @@
 		]
 	\end{frame}
 
-	\section{Dirichlet Diffusion Tree Prior for Bayesian Clustering}	
+	\begin{frame}{Example: Iris Dataset}
+		American Botanist Edgar Anderson measured the sepal length, sepal width, petal length and petal width of three different kinds of Iris flower species. Here we aim to carry out clustering based on petal length and petal width.
+		\begin{figure}[htbp]
+		\centering
+		\includegraphics[scale=0.5]{iris.pdf}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Bayesian Statistics Philosophy}
+			\begin{table}[htbp]
+			\centering
+			\renewcommand{\arraystretch}{2.4}
+			\begin{tabular}{cc}
+			\toprule
+			& Iris Clustering\\
+			\midrule
+			\makecell{Prior Belief about \\ unobserved quantity of interest} & \makecell{Number of Clusters, \\cluster proportion \\ and distribution in each cluster   } \\
+			\makecell{Connection Between Observed \\ and Unobserved Quantity} & \makecell{ Distribution landscape of\\ petal length and width} \\
+			\makecell{Observed Data} & Petal lengths and widths \\
+			\makecell{Posterior Inference} & \makecell{ Updated cluster size, \\ cluster proportion and \\ and distribution in each cluster } \\
+			\bottomrule
+			\end{tabular}
+		\end{table}
+	\end{frame}
+
+	\begin{frame}{Gaussian Mixture Model with Fixed Cluster Number}
+		In this section we assume that we already know there are three clusters.
+		\begin{figure}[htbp]
+		\begin{subfigure}[b]{0.48\columnwidth}
+			\centering
+			\includegraphics[scale=0.40]{2DGMM.png}
+			\subcaption{Gaussian Mixture Distribution}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[b]{0.48\columnwidth}
+			\centering
+			\includegraphics[scale=0.12]{dirichletdemo}
+			\subcaption{Dirichlet distribution for three categories}
+		\end{subfigure}
+			\end{figure}
+	\end{frame}
+
+	\begin{frame}{Prior Distribution Setup}
+		\begin{itemize}
+			\item We use a gaussian mixture distribution to describe the distribution landscape of petal length and widths for all the flowers.
+			$$ \bm{y} \sim \sum_{j=1}^{3}\pi_j \mathcal{N}(\bm{\mu}_j, \Sigma_{j}) $$
+			\item To express our prior beliefs about cluster proportion, cluster mean and cluster variance, we impose some statistical distributions on them as well.
+			\begin{align*}
+				\bm{\mu}_j & \sim \mathcal{N}(\bar{\bm{\mu}}, c\Sigma_j)\quad \text{for j=1,2,3}\\
+				\Sigma_j & \sim \mathcal{IW}(\nu, V) \quad \text{for j=1,2,3} \\
+				\begin{bmatrix} \pi_1 & \pi_2 & \pi_3 \end{bmatrix} & \sim \text{Dirichlet}(\begin{bmatrix} a_1 & a_2 & a_3 \end{bmatrix})
+			\end{align*}
+			\item We need to provide a number for $\bar{\bm{\mu}}$, $c$, $\nu$, $V$ and $\begin{bmatrix} a_1 & a_2 & a_3 \end{bmatrix}$.
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Posterior Inference}
+		Through some nontrivial computation, we can get a posterior distribution for the cluster mean $\bm{\mu}_1$, $\bm{\mu}_2$, $\bm{\mu}_3$ and the cluster variance $\Sigma_1$, $\Sigma_2$ and $\Sigma_3$. I take the mean value from the posterior distributions and visualize them below.
+		\begin{figure}[htbp]
+		\begin{subfigure}[b]{0.48\columnwidth}
+			\centering
+			\includegraphics[scale=0.42]{iris_postmean}
+			\subcaption{Posterior GMM Components}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[b]{0.48\columnwidth}
+			\centering
+			\includegraphics[scale=0.42]{iris_pred}
+			\subcaption{Cluster Prediction}
+		\end{subfigure}
+			\end{figure}
+		
+	\end{frame}
+
+
+	\subsection{Gaussian Mixture Model with Flexible Number of Clusters}
 		\begin{frame}
 		\tableofcontents
 		[

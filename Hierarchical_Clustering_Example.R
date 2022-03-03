@@ -1,6 +1,5 @@
 library(MASS)
 library(dplyr)
-library(hclust)
 
 mu1 <- c(2,2)
 sigma1 <- diag(2)/2
@@ -50,7 +49,7 @@ dat$aggloresult <- paste0("R", agglo_prediction)
 # plotting
 library(ggplot2)
 ggplot(dat, aes(X, Y, label=index)) + geom_point() + 
-  xlim(0, 5) + ylim(0, 5)+
+  xlim(0, 5) + ylim(0, 5)+ geom_text(hjust=-0.1, vjust=-0.1)+
   theme_bw(base_size=12)
 
 
@@ -66,37 +65,18 @@ ggplot(dat, aes(X, Y, color=divresult, label=index)) + geom_point() +
   theme_bw(base_size=12) + theme(legend.position = "none") +
   scale_color_manual(values=c("red", "blue"))
 
-circles <- c(0.2*exp(pi * 0.2i * seq(0, 2, length.out = Npoints+1)[-1]),
-             0.4*exp(pi * 0.2i * seq(0, 2, length.out = Npoints+1)[-1]),
-             0.6*exp(pi * 0.2i * seq(0, 2, length.out = Npoints+1)[-1]),
-             0.8*exp(pi * 0.2i * seq(0, 2, length.out = Npoints+1)[-1]),
-             exp(pi * 0.2i * seq(0, 2, length.out = Npoints+1)[-1]))
+library(mixtools)
+cluster1 <- ellipse(mu1, sigma1, alpha=0.3) %>% as.data.frame()
+colnames(cluster1) <- c("X", "Y")
+cluster1 <- rbind(cluster1, cluster1[1,])
+cluster2 <- ellipse(mu2, sigma2, alpha=0.3) %>% as.data.frame()
+colnames(cluster2) <- c("X", "Y")
+cluster2 <- rbind(cluster2, cluster2[1,])
 
-coordinates_2D_1 <- data.frame(X=Re(circles), Y=Im(circles))
-coordinates_2D_1$X <- coordinates_2D_1$X + 2
-coordinates_2D_1$Y <- coordinates_2D_1$Y + 2
-
-coordinates_2D_2 <- data.frame(X=Re(circles), Y=Im(circles))
-coordinates_2D_2$X <- coordinates_2D_1$X + 3
-coordinates_2D_2$Y <- coordinates_2D_1$Y + 3
-
-data.grid.1 <- expand.grid(X = seq(1, 3, length.out=50), Y = seq(1, 3, length.out=50))
-data.grid.1$radiussq <- (data.grid.1$X - 2)^2 + (data.grid.1$Y - 2)^2
-data.grid.1 <- data.grid.1 %>% filter(radiussq < 1) %>% select(X, Y)
-q.samp_1 <- cbind(data.grid.1, prob = mvtnorm::dmvnorm(data.grid.1, mean = mu1, sigma = sigma1))
-q.samp_1$Cluster <- "C1"
-
-data.grid.2 <- expand.grid(X = seq(2, 4, length.out=50), Y = seq(2, 4, length.out=50))
-data.grid.2$radiussq <- (data.grid.2$X - 3)^2 + (data.grid.2$Y - 3)^2
-data.grid.2 <- data.grid.2 %>% filter(radiussq < 1) %>% select(X, Y)
-q.samp_2 <- cbind(data.grid.2, prob = mvtnorm::dmvnorm(data.grid.2, mean = mu2, sigma = sigma2))
-q.samp_2$Cluster <- "C2"
-
-q.samps <- rbind(q.samp_1, q.samp_2)
 
 ggplot(data = dat, aes(X, Y)) + geom_point(aes(color = Cluster)) + 
   scale_color_manual(values=c("red", "blue"))+
-  geom_contour(data = q.samp_1, aes(z=prob), col='red')+
-  geom_contour(data = q.samp_2, aes(z=prob), col='blue') +
+  geom_path(data = cluster1, col='red')+
+  geom_path(data = cluster2, col='blue') +
   xlim(0, 5) + ylim(0, 5)+
   theme_bw(base_size=12) + theme(legend.position = "none")

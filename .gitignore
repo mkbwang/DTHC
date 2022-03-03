@@ -12,4 +12,7 @@
 *.toc
 *.eps
 *.png
+*.jpg
+*.dvi
+.DS_Store
 
