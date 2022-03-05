@@ -12,13 +12,20 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{physics}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=blue,
+}
 \usepackage{xcolor}
 \usepackage{multirow}
 \usepackage{bm}
 \usepackage{ragged2e}
 \apptocmd{\frame}{}{\justifying}{}
 
-\title[Bayesian Hierarchical Clustering]{Bayesian Hierarchical Clustering for CyTOF}
+\title[Bayesian Hierarchical Clustering]{Hierarchical Clustering and Bayesian Statistics}
 	\author{Mukai Wang}
 % \beamersetuncovermixins{\opaqueness<1>{25}}{\opaqueness<2->{15}}
 \begin{document}
@@ -92,7 +99,7 @@
 		\end{columns}
 	\end{frame}
 	
-	\begin{frame}{Aggolemative Clustering}
+	\begin{frame}{Agglomerative Clustering}
 		To carry out agglomerative clustering, we need to calculate the pairwise distance between each pair of points.
 		\[ d(i, j) = \sqrt{(X_i - X_j)^2 + (Y_i - Y_j)^2 }\]
 		
@@ -230,7 +237,7 @@
 	\begin{frame}{Divisive Clustering}
 		
 		First calculate the average distance to other points for each point. For example, the average distance of point 1 with other points is
-		\[(0.78+1.84+0.20+3.05+1.96+2.56)/6=1.484 \]
+		\[(0.78+1.84+0.20+3.05+1.96+2.56)/6=1.73 \]
 		\begin{table}[htbp]
 			\centering
 			\begin{tabular}{cc}
@@ -354,10 +361,12 @@
 	\begin{frame}{Example: Inference about a Genetic Status}
 		The current information tells us that the probability of this woman being a carrier ($\theta=1$) versus not being a carrier ($\theta=0$) is the same, namely $P(\theta=1) = P(\theta=0) = 1/2$
 		
-		Now we have additional information that this woman has two sons, and neither of them is affected. We can use this information to update our estimate of $\theta$. Let's use $y_1$ and $y_2$ to denote whether her two sons are affected. If the woman is a carrier, then the chance of her sons being unaffected is
+		\pause
+		Now we have additional information that this woman has two sons, and neither of them is affected. We can use this information to update our estimate of $\theta$. \pause Let's use $y_1$ and $y_2$ to denote whether her two sons are affected. If the woman is a carrier, then the chance of her sons being unaffected is
 		
 		$$ P(\left. y_1=0, y_2=0 \right\vert \theta=1) = 0.5\times 0.5=0.25 $$
 		
+		\pause
 		If the woman is not a carrier, then the chance of her sons being unaffected is
 		
 		$$ P(\left. y_1=0, y_2=0 \right\vert \theta=0) =1 \times 1=1 $$
@@ -407,7 +416,7 @@
 		American Botanist Edgar Anderson measured the sepal length, sepal width, petal length and petal width of three different kinds of Iris flower species. Here we aim to carry out clustering based on petal length and petal width.
 		\begin{figure}[htbp]
 		\centering
-		\includegraphics[scale=0.5]{iris.pdf}
+		\includegraphics[scale=0.55]{iris.pdf}
 		\end{figure}
 	\end{frame}
 
@@ -487,4 +496,71 @@
 		subsectionstyle=show/shaded/hide
 		]
 	\end{frame}
+
+	\begin{frame}{Dirichlet Process(Chinese Restaurant Process)}
+		Can we estimate the number of clusters and the cluster parameters(mean, variance etc) simultaneously? Some statisticians drew inspiration from 
+		\href{https://topicmodels.west.uni-koblenz.de/ckling/tmt/crp.html?parameters=10&dp=1}{Chinese restaurant process} and came up with a statistical algorithm that solves the problem.
+		\pause
+		
+		\begin{enumerate}
+			\item We start with the first flower and put it into a cluster. The cluster parameter (mean, variance etc) is randomly sampled from the posterior distribution taking into account our prior belief and the petal length and width of this first flower.
+			\pause
+			\item As we introduce the second flower, we can choose to assign it to the same cluster as the first flower(share the same cluster parameter) or we choose to set up a new cluster for this second flower with its own cluster parameters. The decision is stochastic, and it's influenced by the resemblance between the second flower and the first flower.
+			\pause
+			\item We continue this process and assign new flowers either to one of the existing clusters, or allocate a new cluster for the new member.
+			\pause
+			\item We repeat this procedure many times. 
+		\end{enumerate}
+	\end{frame}
+
+	\begin{frame}{GMM with Dirichlet Process}
+		I loop through the 150 data points 2000 times. Among the last 1000 iterations,
+		\begin{columns}
+			\begin{column}{0.3\textwidth}
+				
+				\begin{table}[htbp]
+					\small
+					\centering
+					\begin{tabular}{cc}
+						\toprule
+						Clusters & Iterations\\
+						\midrule
+						2 & 866\\
+						3 & 125 \\
+						4& 8 \\
+						5& 1\\
+						\bottomrule
+					\end{tabular}
+				\end{table}
+			\end{column}
+			\begin{column}{0.7\textwidth}
+				\begin{figure}[htbp]
+					\centering
+					\includegraphics[scale=0.52]{iris_dir_pred.pdf}
+				\end{figure}
+			\end{column}
+		\end{columns} 
+	\end{frame}
+
+	\begin{frame}{What's Next?}
+		\begin{itemize}
+			\item Hierarchical clustering is a promising clustering method, but we need to quantify the uncertainty of this algorithm to develop a deeper understanding.
+			\item Bayesian statistics is a popular philosophy for quantifying uncertainty.
+			\item For the next step, I aim at applying Bayesian statistics idea to explain the uncertainty of hierarchical clustering.
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Further Reading}
+		\begin{itemize}
+			\item \href{https://www.nature.com/articles/nbt.1991}{Extracting a cellular hierarchy from high-dimensional
+			cytometry data with SPADE} by Qiu etal
+			\item \href{https://www.statlearning.com/}{Introduction to Statistical Learning} by James, Witten, Hastie and Tibshirani
+			\item \href{https://onlinelibrary.wiley.com/doi/book/10.1002/9780470316801}{Finding Groups in Data} by Kaufman and Rousseeuw
+			\item \href{http://www.stat.columbia.edu/~gelman/book/}{Bayesian Data Analysis} by Gelman etal
+			\item \href{https://www.jstor.org/stable/2291069?seq=1}{Bayesian Density Estimation and Inference Using Mixtures} by Escobar and West
+			\item \href{https://www.jstor.org/stable/1390653?seq=1}{Markov Chain Sampling Methods for Dirichlet Process Mixture Models} by Neal
+		\end{itemize}
+	\end{frame}
+
+
 \end{document}

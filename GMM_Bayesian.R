@@ -1,6 +1,7 @@
 library(dplyr)
+library(dirichletprocess)
 library(bayesm)
-
+library(mixtools)
 
 data(iris)
 iris_subset <- iris %>% select(Petal.Length, Petal.Width, Species)
@@ -8,7 +9,7 @@ iris_subset <- iris %>% select(Petal.Length, Petal.Width, Species)
 library(ggplot2)
 ggplot(iris, aes(x=Petal.Length, y=Petal.Width, color=Species)) + geom_point() + 
   xlab("Petal Length") + ylab("Petal Width")+theme_bw(base_size=12)
-ggsave("iris.pdf", width = 6, height = 4)
+ggsave("iris.pdf", width = 5, height = 4)
 
 
 features <- iris_subset[,c(1,2)] %>% as.matrix()
@@ -65,12 +66,13 @@ c1d <- dmvnorm(features, mean1, var1)
 c2d <- dmvnorm(features, mean2, var2)
 c3d <- dmvnorm(features, mean3, var3)
 
-traj1 <- ellipse(as.vector(mean1), var1, alpha=0.3) %>% as.data.frame()
+dev.off()
+traj1 <- ellipse(as.vector(mean1), var1, alpha=0.3, draw=FALSE) %>% as.data.frame()
 traj1 <- rbind(traj1, traj1[1,])
-traj2 <- ellipse(as.vector(mean2), var2, alpha=0.3) %>% as.data.frame()
+traj2 <- ellipse(as.vector(mean2), var2, alpha=0.3, draw=FALSE) %>% as.data.frame()
 traj2 <- rbind(traj2, traj2[1,])
-traj3 <- ellipse(as.vector(mean3), var3, alpha=0.3) %>% as.data.frame()
-tram3 <- rbind(traj3, traj3[1,])
+traj3 <- ellipse(as.vector(mean3), var3, alpha=0.3, draw=FALSE) %>% as.data.frame()
+traJ3 <- rbind(traj3, traj3[1,])
 
 colnames(traj1) <- c("Petal.Length", "Petal.Width")
 colnames(traj2) <- c("Petal.Length", "Petal.Width")
@@ -78,8 +80,9 @@ colnames(traj3) <- c("Petal.Length", "Petal.Width")
 
 ggplot(iris, aes(x=Petal.Length, y=Petal.Width)) + geom_point(aes(color=Species)) + 
   geom_path(data=traj1) + geom_path(data=traj2) + geom_path(data=traj3)+
-  xlab("Petal Length") + ylab("Petal Width") + theme(legend.position = "none")
-ggsave('iris_postmean.pdf', width=4, height=4)
+  xlab("Petal Length") + ylab("Petal Width") + theme(legend.position = "none")+
+  theme_bw(base_size=12)
+ggsave('iris_postmean.pdf', width=5, height=4)
 
 combined_density <- cbind(c1d, c2d, c3d)
 predicted_label <- apply(combined_density, 1, which.max)
@@ -88,6 +91,47 @@ predicted_label <- apply(combined_density, 1, which.max)
 iris$predict <- as.factor(predicted_label)
 
 ggplot(iris, aes(x=Petal.Length, y=Petal.Width, shape=predict)) + geom_point(size=2) + 
+  xlab("Petal Length") + ylab("Petal Width") + theme(legend.position = "none")+
+  theme_bw(base_size=12)
+ggsave('iris_pred.pdf', width=5, height=4)
+
+
+# apply dirichlet process
+
+iris_subset %>% select(Petal.Length, Petal.Width) %>% scale -> iris_scaled
+
+
+dp <- DirichletProcessMvnormal(iris_scaled)
+dp <- Fit(dp, 2000, progressBar = TRUE)
+
+num_clusters <- rep(0, 1000)
+
+for (iter in 1001:2000){
+  num_clusters[iter - 1000] <- length(table(dp$labelsChain[[iter]]))
+}
+
+twocluster <- cbind(iris_subset, as.factor(dp$labelsChain[[2000]]))
+colnames(twocluster)[4] <- 'Label'
+twocluster$Sample <- "Two Cluster"
+
+threecluster <- cbind(iris_subset, as.factor(dp$labelsChain[[1910]]))
+colnames(threecluster)[4] <- 'Label'
+threecluster$Sample <- "Three Cluster"
+
+fourcluster <- cbind(iris_subset, as.factor(dp$labelsChain[[1351]]))
+colnames(fourcluster)[4] <- 'Label'
+fourcluster$Sample <- "Four Cluster"
+
+fivecluster <- cbind(iris_subset, as.factor(dp$labelsChain[[1991]]))
+colnames(fivecluster)[4] <- 'Label'
+fivecluster$Sample <- "Five Cluster"
+
+result <- rbind(twocluster, threecluster, fourcluster, fivecluster)
+
+
+library(ggplot2)
+ggplot(result, aes(x=Petal.Length, y=Petal.Width, shape=Label)) + geom_point(size=2) + 
+  facet_wrap(~Sample, nrow=2) + theme_bw(base_size=12)+
   xlab("Petal Length") + ylab("Petal Width") + theme(legend.position = "none")
-ggsave('iris_pred.pdf', width=4, height=4)
+ggsave('iris_dir_pred.pdf', width=6, height=5)
 
