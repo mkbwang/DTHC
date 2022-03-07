@@ -110,19 +110,24 @@ for (iter in 1001:2000){
   num_clusters[iter - 1000] <- length(table(dp$labelsChain[[iter]]))
 }
 
-twocluster <- cbind(iris_subset, as.factor(dp$labelsChain[[2000]]))
+twoclusterid <- max(which(num_clusters == 2)) + 1000
+threeclusterid <- max(which(num_clusters == 3)) + 1000
+fourclusterid <- max(which(num_clusters == 4)) + 1000
+fiveclusterid <- max(which(num_clusters == 5)) + 1000
+
+twocluster <- cbind(iris_subset, as.factor(dp$labelsChain[[twoclusterid]]))
 colnames(twocluster)[4] <- 'Label'
 twocluster$Sample <- "Two Cluster"
 
-threecluster <- cbind(iris_subset, as.factor(dp$labelsChain[[1910]]))
+threecluster <- cbind(iris_subset, as.factor(dp$labelsChain[[threeclusterid]]))
 colnames(threecluster)[4] <- 'Label'
 threecluster$Sample <- "Three Cluster"
 
-fourcluster <- cbind(iris_subset, as.factor(dp$labelsChain[[1351]]))
+fourcluster <- cbind(iris_subset, as.factor(dp$labelsChain[[fourclusterid]]))
 colnames(fourcluster)[4] <- 'Label'
 fourcluster$Sample <- "Four Cluster"
 
-fivecluster <- cbind(iris_subset, as.factor(dp$labelsChain[[1991]]))
+fivecluster <- cbind(iris_subset, as.factor(dp$labelsChain[[fiveclusterid]]))
 colnames(fivecluster)[4] <- 'Label'
 fivecluster$Sample <- "Five Cluster"
 
@@ -130,7 +135,7 @@ result <- rbind(twocluster, threecluster, fourcluster, fivecluster)
 
 
 library(ggplot2)
-ggplot(result, aes(x=Petal.Length, y=Petal.Width, shape=Label)) + geom_point(size=2) + 
+ggplot(result, aes(x=Petal.Length, y=Petal.Width, color=Label)) + geom_point(size=2) + 
   facet_wrap(~Sample, nrow=2) + theme_bw(base_size=12)+
   xlab("Petal Length") + ylab("Petal Width") + theme(legend.position = "none")
 ggsave('iris_dir_pred.pdf', width=6, height=5)
