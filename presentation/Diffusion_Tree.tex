@@ -1,0 +1,206 @@
+\documentclass{beamer}
+% \setbeamertemplate{navigation symbols}{}
+%\setbeamercolor{frametitle}{fg=black,bg=white}
+%\setbeamercolor{title}{fg=black,bg=yellow!85!orange}
+\usetheme{Boadilla}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{physics}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=blue,
+}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{bm}
+\usepackage{ragged2e}
+\apptocmd{\frame}{}{\justifying}{}
+
+\title[Bayesian Hierarchical Clustering]{Diffusion Tree Hierarchical Clustering}
+\author{Mukai Wang}
+
+\begin{document}
+	\begin{frame}
+		\titlepage
+	\end{frame}
+	
+	\begin{frame}{Example Data}
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.6]{datagen.pdf}
+		\end{figure}
+		10000 iterations, check the dendrogram at 9900, 9910, $\cdots$ 10000. Took 2.75 seconds.
+	\end{frame}
+
+	\begin{frame}{Sample Dendrograms}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{scaleddata.pdf}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9900.pdf}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+
+	
+	\begin{frame}{Sample Dendrograms}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{scaleddata.pdf}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9910.pdf}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Sample Dendrograms}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{scaleddata.pdf}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9920.pdf}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Sample Dendrograms}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{scaleddata.pdf}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9930.pdf}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Sample Dendrograms}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{scaleddata.pdf}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9940.pdf}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Sample Dendrograms}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{scaleddata.pdf}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9950.pdf}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Sample Dendrograms}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{scaleddata.pdf}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9960.pdf}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Sample Dendrograms}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{scaleddata.pdf}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9970.pdf}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Sample Dendrograms}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{scaleddata.pdf}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9980.pdf}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Sample Dendrograms}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{scaleddata.pdf}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9990.pdf}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Sample Dendrograms}
+		\begin{figure}[htbp]
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=0.5]{scaleddata.pdf}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[b]{0.45\columnwidth}
+				\centering
+				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_10000.pdf}
+			\end{subfigure}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{TODO}
+		\begin{itemize}
+			\item Prepare an easier dataset
+			\item Understand more about the code. 
+			\item Adjust prior parameters
+		\end{itemize}
+	\end{frame}
+\end{document}
