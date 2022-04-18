@@ -34,173 +34,44 @@
 	\end{frame}
 	
 	\begin{frame}{Example Data}
+		\small
+		I prepare 160 data points belonging to 4 clusters. Each cluster has 40 points. The centers of the four clusters are $(2,2)$, $(2,-2)$, $(-2, 2)$ and $(-2, -2)$ accordingly. I choose two difference variance parameters to create an easy and a difficult situation.
 		\begin{figure}[htbp]
 			\centering
-			\includegraphics[scale=0.6]{datagen.pdf}
+			\includegraphics[scale=0.65]{testcase.pdf}
 		\end{figure}
-		10000 iterations, check the dendrogram at 9900, 9910, $\cdots$ 10000. Took 2.75 seconds.
 	\end{frame}
 
-	\begin{frame}{Sample Dendrograms}
+	\begin{frame}{Performance}
+		\small 
+		
+		For the easier case, the traditional agglomerative clustering achieved perfect performance. About 20\% of the sample trees can also achieve perfect performance. As to the more difficult case, the traditional agglomerative clustering achieved 82.5\% performance. 7 out of 100 samples achieved better performance.
+		
 		\begin{figure}[htbp]
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=0.5]{scaleddata.pdf}
-			\end{subfigure}
-			\hfill
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9900.pdf}
-			\end{subfigure}
+			\centering
+			\includegraphics[scale=0.55]{testcase_performance.pdf}
 		\end{figure}
 	\end{frame}
-
 	
-	\begin{frame}{Sample Dendrograms}
+	\begin{frame}{Performance}
+		Some bad examples stem from the fact that some individual points break away from others too early.
 		\begin{figure}[htbp]
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=0.5]{scaleddata.pdf}
-			\end{subfigure}
-			\hfill
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9910.pdf}
-			\end{subfigure}
+			\centering
+			\includegraphics[scale=0.7]{problem1.pdf}
 		\end{figure}
 	\end{frame}
 
-	\begin{frame}{Sample Dendrograms}
+	\begin{frame}{Performance}
 		\begin{figure}[htbp]
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=0.5]{scaleddata.pdf}
-			\end{subfigure}
-			\hfill
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9920.pdf}
-			\end{subfigure}
+			\centering
+			\includegraphics[scale=0.7]{problem2.pdf}
 		\end{figure}
 	\end{frame}
 
-	\begin{frame}{Sample Dendrograms}
-		\begin{figure}[htbp]
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=0.5]{scaleddata.pdf}
-			\end{subfigure}
-			\hfill
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9930.pdf}
-			\end{subfigure}
-		\end{figure}
-	\end{frame}
-
-	\begin{frame}{Sample Dendrograms}
-		\begin{figure}[htbp]
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=0.5]{scaleddata.pdf}
-			\end{subfigure}
-			\hfill
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9940.pdf}
-			\end{subfigure}
-		\end{figure}
-	\end{frame}
-
-	\begin{frame}{Sample Dendrograms}
-		\begin{figure}[htbp]
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=0.5]{scaleddata.pdf}
-			\end{subfigure}
-			\hfill
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9950.pdf}
-			\end{subfigure}
-		\end{figure}
-	\end{frame}
-
-	\begin{frame}{Sample Dendrograms}
-		\begin{figure}[htbp]
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=0.5]{scaleddata.pdf}
-			\end{subfigure}
-			\hfill
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9960.pdf}
-			\end{subfigure}
-		\end{figure}
-	\end{frame}
-
-	\begin{frame}{Sample Dendrograms}
-		\begin{figure}[htbp]
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=0.5]{scaleddata.pdf}
-			\end{subfigure}
-			\hfill
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9970.pdf}
-			\end{subfigure}
-		\end{figure}
-	\end{frame}
-
-	\begin{frame}{Sample Dendrograms}
-		\begin{figure}[htbp]
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=0.5]{scaleddata.pdf}
-			\end{subfigure}
-			\hfill
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9980.pdf}
-			\end{subfigure}
-		\end{figure}
-	\end{frame}
-
-	\begin{frame}{Sample Dendrograms}
-		\begin{figure}[htbp]
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=0.5]{scaleddata.pdf}
-			\end{subfigure}
-			\hfill
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_9990.pdf}
-			\end{subfigure}
-		\end{figure}
-	\end{frame}
-
-	\begin{frame}{Sample Dendrograms}
-		\begin{figure}[htbp]
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=0.5]{scaleddata.pdf}
-			\end{subfigure}
-			\hfill
-			\begin{subfigure}[b]{0.45\columnwidth}
-				\centering
-				\includegraphics[scale=1.7]{Neal_Program/dendrograms/example_10000.pdf}
-			\end{subfigure}
-		\end{figure}
-	\end{frame}
-
-	\begin{frame}{TODO}
+	\begin{frame}{Next Step}
 		\begin{itemize}
-			\item Prepare an easier dataset
-			\item Understand more about the code. 
-			\item Adjust prior parameters
+			\item Summarize the phenomena observed, improve how to cut tree? Find MAP.
+			\item Apply algorithm on CyTOF data.
 		\end{itemize}
 	\end{frame}
 \end{document}

@@ -1,6 +1,8 @@
 library(MASS)
 library(dplyr)
 
+rm(list=ls())
+
 mu1 <- c(2, 2)
 sigma1 <- diag(2)
 
@@ -20,17 +22,10 @@ dat3 <- cbind(mvrnorm(40, mu3, sigma3), 3) %>% round(digits=2)
 dat4 <- cbind(mvrnorm(40, mu4, sigma4), 4) %>% round(digits=2)
 
 alldata <- as.data.frame(rbind(dat1, dat2, dat3, dat4))
-# write.table(alldata, file='testdata', sep='\t', col.names = FALSE, row.names=FALSE)
+write.table(alldata, file='testdatavar1', sep='\t', col.names = FALSE, row.names=FALSE)
 
 alldata$V3 <- as.factor(alldata$V3)
 library(ggplot2)
 ggplot(alldata, aes(x=V1, y=V2, color=V3)) + geom_point()
 
-# agglomerate clustering
-d <- dist(alldata[,c(1,2)], method = "euclidean")
-
-hc1 <- hclust(d, method="complete")
-plot(hc1)
-
-agglomerative_result <- cutree(hc1, k=4)
 
