@@ -37,9 +37,8 @@ traces_plot <- ggplot() +
   geom_point(data=highlight_points, aes(x=Time, y=Value), size=1.5, colour="#BD4700")+
   geom_text(data=highlight_points, aes(x=Time, y=Value, label=Label), 
             size=5, nudge_x=0.03, nudge_y=0.03, colour="#BD4700")+
-  xlab('Time') +ylab('X')
-
-traces_plot  
+  xlab('Time') +ylab('X') + theme_bw()
+ 
 
 
 track1 <- highlight_points[c(1, 4, 3, 2, 6), ]
@@ -57,7 +56,12 @@ simplified_traces_plot <- ggplot() +
   geom_point(data=highlight_points, aes(x=Time, y=Value), size=1.5, colour="#BD4700")+
   geom_text(data=highlight_points, aes(x=Time, y=Value, label=Label), 
             size=5, nudge_x=0.03, nudge_y=0.03, colour="#BD4700")+
-  xlab('Time') +ylab('X')
+  xlab('Time') +ylab('X')+ theme_bw()
 
 
-simplified_traces_plot
+
+library(cowplot)
+
+plot_grid(traces_plot, simplified_traces_plot, labels = "AUTO",
+          ncol=1)
+

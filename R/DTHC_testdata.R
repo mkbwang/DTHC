@@ -26,6 +26,8 @@ write.table(alldata, file='testdatavar1', sep='\t', col.names = FALSE, row.names
 
 alldata$V3 <- as.factor(alldata$V3)
 library(ggplot2)
-ggplot(alldata, aes(x=V1, y=V2, color=V3)) + geom_point()
+ggplot(alldata, aes(x=V1, y=V2, color=V3)) + geom_point() +
+   theme_bw() + theme(legend.position = "none") +
+  xlab("X") + ylab("Y")
 
 

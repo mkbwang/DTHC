@@ -1,8 +1,0 @@
-#!/bin/bash
-
-for i in $(seq 5000 100 7000)
-do
-    ./dft-dendrogram test.log ${i} > dendgram_testdata/example_${i}.ps
-    ps2pdf dendgram_testdata/example_${i}.ps  dendgram_testdata/example_${i}.pdf
-    pdfcrop dendgram_testdata/example_${i}.pdf  dendgram_testdata/example_${i}.pdf
-done
