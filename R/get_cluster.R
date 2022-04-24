@@ -35,22 +35,22 @@ find_cluster <- function(structure, num_cluster = 4){
 }
 
 
-print_labels <- function(clusters){
-
-  num_clusters <- length(clusters)
-  
-  # individual ID
-  indvs <- foreach(i=1:num_clusters, .combine=c) %do% clusters[[i]]
-  
-  # median value
-  mean_values <- foreach(i=1:num_clusters, .combine=c) %do% mean(clusters[[i]])
-  
-  
-  distinct_labels <- rank(mean_values)
-  complete_labels <- foreach(i=1:num_clusters, .combine=c) %do% 
-    rep(distinct_labels[i], length(clusters[[i]]))
-  
-  outcome <- cbind(indvs, complete_labels)
-  return(outcome[order(outcome[, 1]), 2])
-}
-
+# print_labels <- function(clusters){
+# 
+#   num_clusters <- length(clusters)
+#   
+#   # individual ID
+#   indvs <- foreach(i=1:num_clusters, .combine=c) %do% clusters[[i]]
+#   
+#   # median value
+#   mean_values <- foreach(i=1:num_clusters, .combine=c) %do% mean(clusters[[i]])
+#   
+#   
+#   distinct_labels <- rank(mean_values)
+#   complete_labels <- foreach(i=1:num_clusters, .combine=c) %do% 
+#     rep(distinct_labels[i], length(clusters[[i]]))
+#   
+#   outcome <- cbind(indvs, complete_labels)
+#   return(outcome[order(outcome[, 1]), 2])
+# }
+# 

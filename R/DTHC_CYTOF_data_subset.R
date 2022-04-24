@@ -41,6 +41,7 @@ scaled_sample$CD49b[scaled_sample$CD49b > 1] = 1
 
 # normalize them to have mean zero and standard deviation of 1
 normalized_sample <- scaled_sample %>% mutate_at(c("CD3", "CD8", "CD49b"), ~(scale(.) %>% as.vector))
+normalized_sample$Type <- as.numeric(as.factor(normalized_sample$Type))
 
 library(ggplot2)
 biplot1 <- ggplot(normalized_sample, aes(x=CD3, y=CD8, color=Type)) + 
@@ -66,7 +67,8 @@ sample_data %>% group_by(hierclust) %>% summarise(meanCD3 = mean(CD3),
                                                   meanCD8 = mean(CD8),
                                                   meanCD49 = mean(CD49b))
 
-normalized_expmat <- normalized_sample[, c(1,2,3)] %>% as.matrix() %>%  round(digits=2)
+
+normalized_expmat <- normalized_sample %>% as.matrix() %>%  round(digits=2)
 
 
 write.table(normalized_expmat, file='extdata/CyTOFdata', sep='\t', col.names = FALSE, row.names=FALSE)

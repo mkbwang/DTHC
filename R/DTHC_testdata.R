@@ -22,7 +22,7 @@ dat3 <- cbind(mvrnorm(40, mu3, sigma3), 3) %>% round(digits=2)
 dat4 <- cbind(mvrnorm(40, mu4, sigma4), 4) %>% round(digits=2)
 
 alldata <- as.data.frame(rbind(dat1, dat2, dat3, dat4))
-write.table(alldata, file='testdatavar1', sep='\t', col.names = FALSE, row.names=FALSE)
+write.table(alldata, file='extdata/testdata', sep='\t', col.names = FALSE, row.names=FALSE)
 
 alldata$V3 <- as.factor(alldata$V3)
 library(ggplot2)
