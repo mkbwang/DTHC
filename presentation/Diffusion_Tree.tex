@@ -1,0 +1,77 @@
+\documentclass{beamer}
+% \setbeamertemplate{navigation symbols}{}
+%\setbeamercolor{frametitle}{fg=black,bg=white}
+%\setbeamercolor{title}{fg=black,bg=yellow!85!orange}
+\usetheme{Boadilla}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{physics}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=blue,
+}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{bm}
+\usepackage{ragged2e}
+\apptocmd{\frame}{}{\justifying}{}
+
+\title[Bayesian Hierarchical Clustering]{Diffusion Tree Hierarchical Clustering}
+\author{Mukai Wang}
+
+\begin{document}
+	\begin{frame}
+		\titlepage
+	\end{frame}
+	
+	\begin{frame}{Example Data}
+		\small
+		I prepare 160 data points belonging to 4 clusters. Each cluster has 40 points. The centers of the four clusters are $(2,2)$, $(2,-2)$, $(-2, 2)$ and $(-2, -2)$ accordingly. I choose two difference variance parameters to create an easy and a difficult situation.
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.65]{testcase.pdf}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Performance}
+		\small 
+		
+		For the easier case, the traditional agglomerative clustering achieved perfect performance. About 20\% of the sample trees can also achieve perfect performance. As to the more difficult case, the traditional agglomerative clustering achieved 82.5\% performance. 7 out of 100 samples achieved better performance.
+		
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.55]{testcase_performance.pdf}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Performance}
+		Some bad examples stem from the fact that some individual points break away from others too early.
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.7]{problem1.pdf}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Performance}
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.7]{problem2.pdf}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}{Next Step}
+		\begin{itemize}
+			\item Summarize the phenomena observed, improve how to cut tree? Find MAP.
+			\item Apply algorithm on CyTOF data.
+		\end{itemize}
+	\end{frame}
+\end{document}
