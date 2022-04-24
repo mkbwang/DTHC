@@ -55,19 +55,6 @@ library(cowplot)
 
 plot_grid(biplot1, biplot2, biplot3, align="v", ncol=1)
 
-# hierarchical clustering
-expressions <- normalized_sample[, c(1,2,3)] %>% as.matrix()
-dist_mat <- dist(expressions, method="euclidean")
-
-hierclust_result <- hclust(dist_mat, method = 'complete')
-
-
-sample_data$hierclust <- cutree(hierclust_result, k=3)
-sample_data %>% group_by(hierclust) %>% summarise(meanCD3 = mean(CD3),
-                                                  meanCD8 = mean(CD8),
-                                                  meanCD49 = mean(CD49b))
-
-
 normalized_expmat <- normalized_sample %>% as.matrix() %>%  round(digits=2)
 
 

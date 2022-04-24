@@ -1,5 +1,6 @@
 # check out the likelihood trace
-
+library(fpc)
+library(mclust)
 
 rm(list=ls())
 test_liks <- read.table('extdata/test_lik.txt', sep='', header=FALSE)[, 6]
@@ -76,13 +77,18 @@ rand_test_real_hclust <- adjustedRandIndex(test_reallabels, test_hclust)
 rand_test_DFT_real <- rep(0, length(tree_ids))
 rand_test_DFT_hclust <- rep(0, length(tree_ids))
 for (i in 1:length(tree_ids)){
-  rand_DFT_real[i] <- adjustedRandIndex(test_reallabels, test_tree_samples[, i])
+  rand_test_DFT_real[i] <- adjustedRandIndex(test_reallabels, test_tree_samples[, i])
   rand_test_DFT_hclust[i] <- adjustedRandIndex(test_hclust, test_tree_samples[, i])
+}
+CH_test_real <- calinhara(test_features, test_reallabels)
+CH_test_hclust <- calinhara(test_features, test_hclust)
+CH_test_DFT <- rep(0, length(tree_ids))
+for (i in 1:length(tree_ids)){
+  CH_test_DFT[i] <- calinhara(test_features, test_tree_samples[, i])
 }
 
 
-
-## simulated data
+## real cytof data
 
 cytof_tree_samples <- matrix(0, nrow=796, ncol=length(tree_ids))
 for (i in 1:length(tree_ids)){
@@ -103,5 +109,11 @@ rand_cytof_hclust_DFT <- rep(0, length(tree_ids))
 for (i in 1:length(tree_ids)){
   rand_cytof_DFT_real[i] <- adjustedRandIndex(cytof_reallabels, cytof_tree_samples[, i])
   rand_cytof_hclust_DFT[i] <- adjustedRandIndex(cytof_hclust, cytof_tree_samples[, i])  
+}
+CH_cytof_real <- calinhara(cytof_features, cytof_reallabels)
+CH_cytof_hclust <- calinhara(cytof_features, cytof_hclust)
+CH_cytof_DFT <- rep(0, length(tree_ids))
+for (i in 1:length(tree_ids)){
+  CH_cytof_DFT[i] <- calinhara(cytof_features, cytof_tree_samples[, i])
 }
 

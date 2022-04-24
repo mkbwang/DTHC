@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 ./dft-spec cytof.log 0 3 / 0.5:0.5:0.5 - 0.5:0.5 0.5:0.5
 
 ./model-spec cytof.log real 0.8:0.8
