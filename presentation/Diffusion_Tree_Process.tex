@@ -1,0 +1,373 @@
+\documentclass{beamer}
+% \setbeamertemplate{navigation symbols}{}
+%\setbeamercolor{frametitle}{fg=black,bg=white}
+%\setbeamercolor{title}{fg=black,bg=yellow!85!orange}
+\usetheme{Boadilla}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{epsfig}
+\usepackage{algorithm}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{algpseudocode}
+\usepackage{epstopdf}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{physics}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=blue,
+}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{bm}
+\usepackage{ragged2e}
+\apptocmd{\frame}{}{\justifying}{}
+
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+
+\makeatletter
+\newenvironment{breakablealgorithm}
+{% \begin{breakablealgorithm}
+		\begin{center}
+			\refstepcounter{algorithm}% New algorithm
+			\hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+			\renewcommand{\caption}[2][\relax]{% Make a new \caption
+				{\raggedright\textbf{\fname@algorithm~\thealgorithm} ##2\par}%
+				\ifx\relax##1\relax % #1 is \relax
+				\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+				\else % #1 is not \relax
+				\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+				\fi
+				\kern2pt\hrule\kern2pt
+			}
+		}{% \end{breakablealgorithm}
+		\kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+	\end{center}
+}
+\makeatother
+
+\title[Bayesian Hierarchical Clustering]{Diffusion Tree Hierarchical Clustering}
+\author{Mukai Wang}
+
+\begin{document}
+	\begin{frame}
+		\titlepage
+	\end{frame}
+	
+	\section{Recap}
+	\begin{frame}
+		\tableofcontents
+		[
+		currentsection,
+		currentsubsection,
+		subsectionstyle=show/shaded/hide
+		]
+	\end{frame}
+	
+	\begin{frame}{Iris Dataset}
+		American Botanist Edgar Anderson measured the sepal length, sepal width, petal length and petal width of three different kinds of Iris flower species. Here we aim to carry out clustering based on petal length and petal width.
+		\begin{figure}[htbp]
+		\centering
+		\includegraphics[scale=0.55]{iris.pdf}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Dirichlet Process(Chinese Restaurant Process)}
+		Can we estimate the number of clusters and the cluster parameters(mean, variance etc) simultaneously? Some statisticians drew inspiration from 
+		\href{https://topicmodels.west.uni-koblenz.de/ckling/tmt/crp.html?parameters=10&dp=1}{Chinese restaurant process} and came up with a statistical algorithm that solves the problem.
+		
+		\begin{enumerate}
+			\item We start with the first flower and put it into a cluster. The cluster parameter (mean, variance etc) is randomly sampled from the posterior distribution taking into account our prior belief and the petal length and width of this first flower.
+			\item As we introduce the second flower, we can choose to assign it to the same cluster as the first flower(share the same cluster parameter) or we choose to set up a new cluster for this second flower with its own cluster parameters. The decision is stochastic, and it's influenced by the resemblance between the second flower and the first flower.
+			\item We continue this process and assign new flowers either to one of the existing clusters, or allocate a new cluster for the new member.
+			\item We repeat this procedure many times. 
+		\end{enumerate}
+	\end{frame}	
+	
+	\begin{frame}{GMM with Dirichlet Process}
+		I loop through the 150 data points 2000 times. Among the last 1000 iterations,
+		\begin{columns}
+			\begin{column}{0.3\textwidth}
+				
+				\begin{table}[htbp]
+					\small
+					\centering
+					\begin{tabular}{cc}
+						\toprule
+						Clusters & Iterations\\
+						\midrule
+						2 & 845\\
+						3 & 137 \\
+						4& 8 \\
+						5& 1\\
+						\bottomrule
+					\end{tabular}
+				\end{table}
+			\end{column}
+			\begin{column}{0.7\textwidth}
+				\begin{figure}[htbp]
+					\centering
+					\includegraphics[scale=0.52]{iris_dir_pred.pdf}
+				\end{figure}
+			\end{column}
+		\end{columns} 
+	\end{frame}	
+	
+	\section{Diffusion Tree Process}
+	
+	\begin{frame}
+		\tableofcontents
+		[
+		currentsection,
+		currentsubsection,
+		subsectionstyle=show/shaded/hide
+		]
+	\end{frame}	
+	
+	\begin{frame}{Illustration}
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.6]{dftsimulation.pdf}
+		\end{figure}
+	\end{frame}	
+	
+	\begin{frame}{Algorithm}
+
+		\begin{algorithm}[H]
+\caption{Diffusion Tree Process}\label{DFT}
+	\textbf{Input}   Number of points $N$, Variance $\sigma^2$, Diffusion function $a(t)$
+	\begin{algorithmic}[1]
+	    \State $W_{1}(0) \gets 0$
+	    \State $W_{1}(1) - W_{1}(0) \sim \mathcal{N}(0, \sigma^2)$
+		\For{$i \gets 2$ to $N$}
+	        \State $t_{i} \sim F_i(t) = 1-\exp(-\int_{0}^{t}\frac{a(\tau)}{i-1} \diff{\tau})$  \Comment{Time to split away}
+	        \State $j \sim \mathcal{U}\{1, i-1 \}$ \Comment{randomly choose the path of a previous point}
+	        \State $W_{i}(t_{i}) \gets W_{j}(t_{i})$
+	        \State $W_{i}(1) - W_{i}(t_{i}) \sim \mathcal{N}(0, \sigma^2 (1-t_{i}))$
+		\EndFor	
+	\end{algorithmic}
+	 \textbf{Output} Wiener process trajectory $W_{i}(t)$ for $i=1,2,\cdots N$
+\end{algorithm}
+	\end{frame}	
+	
+	\begin{frame}{Likelihood}
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.6]{simplifiedplot.pdf}
+		\end{figure}
+	\end{frame}	
+	
+	\begin{frame}{Likelihood}
+		The likelihood is composed of a structure factor and a data factor
+		\small
+		\begin{align*}
+    S(\bm{X}; a(t)) &= S\left(\left.X_2 \right\vert X_1  \right) S\left(\left.X_3 \right\vert X_1, X_2  \right)S\left(\left.X_4 \right\vert X_1, X_2, X_3  \right)S\left(\left.X_5 \right\vert X_1, X_2, X_3, X_4  \right)\\
+    &=\exp(-A(t_a))a(t_a) \cdot \exp(-\frac{A(t_b)}{2})\frac{a(t_b)}{2} \cdot  \exp(-\frac{A(t_c)}{3})\frac{a(t_c)}{3}\cdot \\
+    &\quad \frac{3}{4}\exp(-\frac{A(t_c)}{4})\cdot \frac{2}{3}\exp(\frac{A(t_c) - A(t_b)}{3})\cdot \frac{1}{2}\exp(\frac{A(t_b) - A(t_a)}{2})\cdot \\
+    &\quad \exp(A(t_a) - A(t_d))a(t_d)
+\end{align*}
+
+\begin{align*}
+    D(\bm{X}; \sigma^2) &= \mathcal{N}\left(\left. X_c \right\vert 0, \sigma^2 t_c \right)\mathcal{N}\left(\left. X_b \right\vert X_c, \sigma^2 (t_b - t_c) \right)\mathcal{N}\left(\left. X_4 \right\vert X_c, \sigma^2 (1 - t_c) \right)\times \\
+    &\quad \mathcal{N}\left(\left. X_a \right\vert 
+    X_b, \sigma^2 (t_a - t_b) \right) \mathcal{N}\left(\left. X_3 \right\vert X_b, \sigma^2 (1 - t_b) \right)\mathcal{N}\left(\left. X_d \right\vert X_a, \sigma^2 (t_d - t_a) \right)\times \\
+    &\quad \mathcal{N}\left(\left. X_2 \right\vert X_d, \sigma^2 (1 - t_d) \right) \mathcal{N}\left(\left. X_5 \right\vert X_d, \sigma^2 (1 - t_d) \right)
+\end{align*}
+
+
+	\end{frame}	
+	
+	\begin{frame}{Posterior Sampling}
+	
+		To generate a number of diffusion tree samples and understand the uncertainty of hierarchical clustering, we repeatedly take out a node and try to put it back into the tree.
+		
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.32]{DTsampling.png}
+		\end{figure}
+	\end{frame}	
+	
+	\section{Experiment Results}
+	
+	\begin{frame}
+		\tableofcontents
+		[
+		currentsection,
+		currentsubsection,
+		subsectionstyle=show/shaded/hide
+		]
+	\end{frame}
+	
+	\begin{frame}{Simulated Data}
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.55]{simulateddata.pdf}
+			\caption*{160 data points generated from four clusters. Each cluster follows a 2D normal distribution with variance of $\begin{bmatrix} 1&0\\0&1 \end{bmatrix}$ and mean of $\begin{bmatrix}2&2 \end{bmatrix}^\top$, $\begin{bmatrix}2&-2 \end{bmatrix}^\top$, $\begin{bmatrix}-2&2 \end{bmatrix}^\top$ and $\begin{bmatrix}-2&-2 \end{bmatrix}^\top$}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Real Data}
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.6]{cytofdata.pdf}
+			\caption*{There are 796 cells belonging to CD8T cells(381), NK cells(257) and NKT cells(158)}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Evaluating Cluster: Adjusted Rand Index}
+		\begin{table}[htbp]
+			\centering
+			\begin{tabular}{c|c|c|c|c|c}
+			 & $Y_1$ & $Y_2$ & $\cdots$ & $Y_s$ & Sum \\
+			 \hline
+			 $X_1$ & $n_{11}$ & $n_{12}$ & $\cdots$ & $n_{1s}$ & $a_{1}$ \\
+			 \hline
+			 $X_{2}$ & $n_{21}$ & $n_{22}$ & $\cdots$ & $n_{2s}$ & $a_{2}$\\
+			 \hline
+			 $\vdots$ & $\vdots$ & $\vdots$ & $\ddots$ & $\vdots$ & $\vdots$\\
+			 \hline
+			 $X_{r}$ & $n_{r1}$ & $n_{r2}$ & $\cdots$ & $n_{rs}$ & $a_{r}$\\
+			 \hline
+			Sum & $b_{1}$ & $b_{2}$ & $\cdots$ & $b_{s}$ &
+			\end{tabular}
+		\end{table}
+		\small
+		$$ \text{ARI} = \frac{\sum_{ij} n_{ij} (n_{ij}-1) -  \frac{ \sum_{i=1}^{r}a_{i}(a_{i}-1) \sum_{j=1}^{s}b_{j}(b_{j} - 1) }{n(n-1)} } {\frac{1}{2}\left[ \sum_{i=1}^{r}a_{i}(a_{i}-1) + \sum_{j=1}^{s}b_{j}(b_{j}-1) \right] -   \frac{ \sum_{i=1}^{r}a_{i}(a_{i}-1) \sum_{j=1}^{s}b_{j}(b_{j} - 1) }{n(n-1)} }  $$
+	\end{frame}
+	
+	\begin{frame}{Evaluating Cluster: Adjusted Rand Index}
+		
+		\begin{columns}
+			\begin{column}{0.48\linewidth}
+			\begin{table}[htbp]
+				\centering
+				\begin{tabular}{c|c|c|c|c}
+					&$Y_1$ & $Y_2$ & $Y_3$ & Sum \\
+					\hline
+					$X_1$ & 4  & 0  &  0 & 4 \\
+					\hline
+					$X_2$ & 0 & 1 & 3 & 4\\
+					\hline
+					$X_3$ & 0 & 3 & 1 & 4\\
+					\hline					
+					Sum & 4 & 4 & 4 & 12  
+				\end{tabular}
+			\end{table}
+			
+			$$  \text{ARI} = 0.54  $$
+		\end{column}
+		
+		\begin{column}{0.48\linewidth}
+			\begin{table}[htbp]
+				\centering
+				\begin{tabular}{c|c|c|c|c}
+					&$Y_1$ & $Y_2$ & $Y_3$ & Sum \\
+					\hline
+					$X_1$ & 2  & 2  &  0 & 4 \\
+					\hline
+					$X_2$ & 2 & 1 & 3 & 6\\
+					\hline
+					$X_3$ & 0 & 3 & 1 & 4\\
+					\hline					
+					Sum & 4 & 6 & 4 & 14  
+				\end{tabular}
+			\end{table}
+
+			$$  \text{ARI} = 0.052  $$			
+			
+		\end{column}
+		\end{columns}	
+		
+	\end{frame}	
+	
+	\begin{frame}{Evaluating Cluster: Calinski Harabasz Index}
+	CH index measures the ratio between \emph{intercluster variance} and \emph{intracluster variance}.
+			$$ \text{CH} = \frac{ \sum_{k=1}^{K}n_{k} \lVert C_{k} - C \rVert^2 }{\sum_{k=1}^{K}\sum_{i=1}^{n_k} \lVert X_{ik} - C_{k} \rVert^2  } \times \frac{N-K}{K-1} $$
+		\begin{table}[htbp]
+			\centering
+			\begin{tabular}{c|c|c|c|c|c|c|c|c}
+				Value & -4 & -3 & -2 & -1 & 1 & 2 & 3 & 4 \\
+				\hline
+				Cluster & 1 & 1 & 1 & 1 & 2 & 2 & 2 & 2 
+			\end{tabular}
+		\end{table}
+		 The cluster result above has a CH index of 30.
+		
+		\begin{table}[htbp]
+			\centering
+			\begin{tabular}{c|c|c|c|c|c|c|c|c}
+				Value & -4 & -3 & -2 & -1 & 1 & 2 & 3 & 4 \\
+				\hline
+				Cluster & 1 & 2 & 1 & 2 & 1 & 2 & 1 & 2 
+			\end{tabular}
+		\end{table}
+		
+		The cluster result above has a CH index of 0.21.
+	\end{frame}
+	
+	\begin{frame}{Summary Statistics}
+				 \begin{table}[htbp]
+				 		\centering
+    		\begin{tabular}{ccc}
+       				\toprule
+       					& Simulated Data & CyTOF Data\\
+      				 \midrule
+       					HC \& Real & 0.609 & 0.166\\
+       				DFT \& Real & 0.374 $\pm$ 0.169 & 0.502$\pm$ 0.189\\
+       				\bottomrule
+    				\end{tabular}
+    				\caption*{Adjusted Rand Index}
+
+    		\begin{tabular}{ccc}
+       \toprule
+       & Simulated Data & CyTOF Data\\
+       \midrule
+       Real & 219.6 & 471.8\\
+       HC & 174.1 & 103.7\\
+       DFT & 52.33 $\pm$ 40.7 & 449.8$\pm$ 119.0\\
+       \bottomrule
+    \end{tabular}
+    				\caption*{Calinski harabasz Index}
+				 \end{table}
+	
+	\end{frame}
+	
+	\begin{frame}{Simulated Data Performance}
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.6]{agglomerativetestdata.pdf}
+			\caption*{Agglomerative Cluster Result on Simulated Data. Adjusted Rand Index against real labeling: 0.60. CH Index: 174.1}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Simulated Data Performance}
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.6]{DFTtestplot.pdf}
+			\caption*{Diffusion Tree Result on Simulated Data. Panel A showcases one sample with adjusted Rand Index against real labeling: 0.42. CH Index: 42.0 Panel B showcases one sample with adjusted Rand Index against real labeling: 0.79. CH Index: 210.1}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Real Data Performance}
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.6]{agglomerativecytofplot.pdf}
+			\caption*{Agglomerative Cluster Result on New Data. Adjusted Rand Index against real labeling: 0.17. CH Index: 411.4}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Real Data Performance}
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[scale=0.52]{DFTcytofplot.pdf}
+			\caption*{Diffusion Tree Result on Simulated Data. Panel A showcases one sample with adjusted Rand Index against real labeling: 0.259. CH Index: 515.7 Panel B showcases one sample with adjusted Rand Index against real labeling: 0.51. CH Index: 576.3}
+		\end{figure}
+	\end{frame}
+	% simulation and real data
+	% talk about measurement of clustering quality as well
+\end{document}
