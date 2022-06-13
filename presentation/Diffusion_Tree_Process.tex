@@ -80,11 +80,14 @@
 	\begin{frame}{Dirichlet Process(Chinese Restaurant Process)}
 		Can we estimate the number of clusters and the cluster parameters(mean, variance etc) simultaneously? Some statisticians drew inspiration from 
 		\href{https://topicmodels.west.uni-koblenz.de/ckling/tmt/crp.html?parameters=10&dp=1}{Chinese restaurant process} and came up with a statistical algorithm that solves the problem.
-		
+		\pause
 		\begin{enumerate}
 			\item We start with the first flower and put it into a cluster. The cluster parameter (mean, variance etc) is randomly sampled from the posterior distribution taking into account our prior belief and the petal length and width of this first flower.
+			\pause
 			\item As we introduce the second flower, we can choose to assign it to the same cluster as the first flower(share the same cluster parameter) or we choose to set up a new cluster for this second flower with its own cluster parameters. The decision is stochastic, and it's influenced by the resemblance between the second flower and the first flower.
+			\pause
 			\item We continue this process and assign new flowers either to one of the existing clusters, or allocate a new cluster for the new member.
+			\pause
 			\item We repeat this procedure many times. 
 		\end{enumerate}
 	\end{frame}	
@@ -261,7 +264,7 @@
 			
 			$$  \text{ARI} = 0.54  $$
 		\end{column}
-		
+		\pause
 		\begin{column}{0.48\linewidth}
 			\begin{table}[htbp]
 				\centering
@@ -288,6 +291,7 @@
 	\begin{frame}{Evaluating Cluster: Calinski Harabasz Index}
 	CH index measures the ratio between \emph{intercluster variance} and \emph{intracluster variance}.
 			$$ \text{CH} = \frac{ \sum_{k=1}^{K}n_{k} \lVert C_{k} - C \rVert^2 }{\sum_{k=1}^{K}\sum_{i=1}^{n_k} \lVert X_{ik} - C_{k} \rVert^2  } \times \frac{N-K}{K-1} $$
+			\pause
 		\begin{table}[htbp]
 			\centering
 			\begin{tabular}{c|c|c|c|c|c|c|c|c}
@@ -298,6 +302,7 @@
 		\end{table}
 		 The cluster result above has a CH index of 30.
 		
+		\pause
 		\begin{table}[htbp]
 			\centering
 			\begin{tabular}{c|c|c|c|c|c|c|c|c}
@@ -328,7 +333,7 @@
        & Simulated Data & CyTOF Data\\
        \midrule
        Real & 219.6 & 471.8\\
-       HC & 174.1 & 103.7\\
+       HC & 174.1 & 411.4\\
        DFT & 52.33 $\pm$ 40.7 & 449.8$\pm$ 119.0\\
        \bottomrule
     \end{tabular}
@@ -367,6 +372,13 @@
 			\includegraphics[scale=0.52]{DFTcytofplot.pdf}
 			\caption*{Diffusion Tree Result on Simulated Data. Panel A showcases one sample with adjusted Rand Index against real labeling: 0.259. CH Index: 515.7 Panel B showcases one sample with adjusted Rand Index against real labeling: 0.51. CH Index: 576.3}
 		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Comment}
+		\begin{itemize}
+			\item For low-dimensional data with similar variance among different dimensions, using diffusion tree is an overkill.
+			\item For high-dimensional data with distinct variance among different dimensions, using diffusion tree can help. 
+		\end{itemize}
 	\end{frame}
 	% simulation and real data
 	% talk about measurement of clustering quality as well
